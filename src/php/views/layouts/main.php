@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($titulo ?? 'ColorMax POS') ?> — ColorMax POS</title>
+    <title><?= htmlspecialchars($titulo ?? 'IPESA Pinturas') ?> — IPESA Pinturas</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,16 +17,16 @@
                 extend: {
                     colors: {
                         brand: {
-                            50:  '#fef7ee',
-                            100: '#fdecd8',
-                            200: '#fad5b0',
-                            300: '#f6b77e',
-                            400: '#f1914a',
-                            500: '#ed7425',
-                            600: '#de5a1b',
-                            700: '#b84318',
-                            800: '#93361b',
-                            900: '#772f19',
+                            50:  '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#e51e25',
+                            600: '#be1219',
+                            700: '#9f1239',
+                            800: '#881337',
+                            900: '#4c0519',
                         },
                         slate_dark: {
                             800: '#1a1f2e',
@@ -104,7 +104,7 @@
 
             <!-- Footer -->
             <footer class="p-4 text-center text-xs text-gray-400 border-t border-gray-100">
-                Ipesa pinturas &copy; <?= date('Y') ?> — Sistema de Punto de Venta para Pinturas
+                IPESA Pinturas &copy; <?= date('Y') ?> — Sistema de Punto de Venta para Pinturas
             </footer>
         </div>
     </div>

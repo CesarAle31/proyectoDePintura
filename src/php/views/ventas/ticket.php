@@ -42,11 +42,10 @@
         <!-- Encabezado del ticket -->
         <div class="bg-gradient-to-r from-brand-500 to-brand-600 text-white px-8 py-6 text-center">
             <div class="flex items-center justify-center gap-3 mb-2">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                </svg>
-                <h1 class="text-2xl font-display font-bold tracking-tight">ColorMax</h1>
+                <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
+                    <img src="src/assets/img/Captura de pantalla 2026-05-24 232344 (1).png" alt="IPESA Pinturas" class="w-full h-full object-contain">
+                </div>
+                <h1 class="text-2xl font-display font-bold tracking-tight">IPESA Pinturas</h1>
             </div>
             <p class="text-brand-100 text-sm">Pinturas y Acabados Profesionales</p>
             <p class="text-brand-200 text-xs mt-1">Oaxaca de Juárez, Oaxaca</p>
@@ -126,7 +125,7 @@
             <div class="mt-3 flex justify-center">
                 <div class="w-48 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
             </div>
-            <p class="text-xs text-gray-300 mt-2">ColorMax POS — <?= date('d/m/Y H:i') ?></p>
+            <p class="text-xs text-gray-300 mt-2">IPESA Pinturas POS — <?= date('d/m/Y H:i') ?></p>
         </div>
     </div>
 </div>

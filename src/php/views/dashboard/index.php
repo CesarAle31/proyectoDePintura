@@ -129,7 +129,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-800"><?= htmlspecialchars($p['nombre']) ?></p>
-                            <p class="text-xs text-gray-400"><?= htmlspecialchars($p['color']) ?> — <?= htmlspecialchars($p['presentacion']) ?></p>
+                            <p class="text-xs text-gray-400"><?= htmlspecialchars($p['color']) ?> — <?= htmlspecialchars($p['presentacion'] ?? '') ?></p>
                         </div>
                     </div>
                     <span class="px-2.5 py-1 text-xs font-bold rounded-lg <?= $p['stock'] <= 5 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' ?>">
@@ -176,8 +176,8 @@
 <!-- ══════ CHART.JS ══════ -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const brandColor = '#ed7425';
-    const brandLight = '#fef7ee';
+    const brandColor = '#e51e25';
+    const brandLight = '#fff1f2';
 
     // ── Ventas por Mes ──
     const ventasMes = <?= json_encode($ventasPorMes) ?>;
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Top Productos ──
     const top = <?= json_encode($topProductos) ?>;
     if (top.length > 0) {
-        const colores = ['#ed7425', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+        const colores = ['#e51e25', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
         new Chart(document.getElementById('chartTopProductos'), {
             type: 'doughnut',
             data: {

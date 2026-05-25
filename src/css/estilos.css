@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  estilos.css — Estilos personalizados ColorMax POS
+ *  estilos.css — Estilos personalizados IPESA Pinturas POS
  * ============================================================
  *  Complementa Tailwind con animaciones, scrollbar custom,
  *  transiciones y utilidades que Tailwind no cubre por defecto.
@@ -76,7 +76,7 @@
     width: 3px;
     height: 60%;
     border-radius: 0 4px 4px 0;
-    background: #ed7425;
+    background: #e51e25;
     transition: transform 0.2s ease;
 }
 .sidebar-link:hover::before,
@@ -114,7 +114,7 @@
     transition: background-color 0.15s ease;
 }
 .table-modern tbody tr:hover {
-    background-color: #fef7ee;
+    background-color: #fef2f2;
 }
 .table-modern tbody tr:last-child td {
     border-bottom: none;
@@ -122,13 +122,13 @@
 
 /* ─── Botones con ripple ─── */
 .btn-primary {
-    background: linear-gradient(135deg, #ed7425, #d4631d);
+    background: linear-gradient(135deg, #e51e25, #b91519);
     color: white;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(237, 116, 37, 0.25);
+    box-shadow: 0 2px 8px rgba(229, 30, 37, 0.25);
 }
 .btn-primary:hover {
-    box-shadow: 0 4px 16px rgba(237, 116, 37, 0.35);
+    box-shadow: 0 4px 16px rgba(229, 30, 37, 0.35);
     transform: translateY(-1px);
 }
 .btn-primary:active {
@@ -162,8 +162,8 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .form-input:focus {
-    border-color: #ed7425;
-    box-shadow: 0 0 0 3px rgba(237, 116, 37, 0.1);
+    border-color: #e51e25;
+    box-shadow: 0 0 0 3px rgba(229, 30, 37, 0.1);
     outline: none;
 }
 
@@ -181,7 +181,7 @@
 .badge-warning { background: #fef3c7; color: #92400e; }
 .badge-danger  { background: #fee2e2; color: #991b1b; }
 .badge-info    { background: #dbeafe; color: #1e40af; }
-.badge-brand   { background: #fef7ee; color: #c2410c; }
+.badge-brand   { background: #fff1f2; color: #9f1239; }
 
 /* ─── Tooltip simple ─── */
 [data-tooltip] {

@@ -30,14 +30,14 @@ class VentaController extends Controller
     public function crear(): void
     {
         $cliente  = new Cliente();
-        $empleado = new Empleado();
         $producto = new Producto();
+        $usuarioActual = Auth::usuario();
 
         $this->view('ventas/form', [
             'titulo'       => 'Nueva Venta',
             'paginaActual' => 'ventas',
             'clientes'     => $cliente->getForSelect(),
-            'empleados'    => $empleado->getForSelect(),
+            'empleadoActual' => $usuarioActual,
             'productos'    => $producto->getAll(),
             'nextFolio'    => $this->modelo->getNextFolio(),
         ]);
@@ -59,9 +59,17 @@ class VentaController extends Controller
         }
 
         try {
+            $usuario = Auth::usuario();
+            $idEmpleado = (int) ($usuario['idEmpleado'] ?? 0);
+
+            if ($idEmpleado <= 0) {
+                $this->json(['error' => 'No se pudo identificar el empleado de la sesiÃ³n'], 401);
+                return;
+            }
+
             $venta = [
                 'folio'      => $input['folio'],
-                'idEmpleado' => $input['idEmpleado'],
+                'idEmpleado' => $idEmpleado,
                 'idCliente'  => $input['idCliente'],
                 'fecha'      => date('Y-m-d'),
                 'montoTotal' => $input['montoTotal'],

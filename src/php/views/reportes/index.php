@@ -108,7 +108,7 @@
                     <?php foreach ($empleadosVentas as $ev): ?>
                     <tr class="table-row">
                         <td class="font-medium text-gray-800 text-sm"><?= htmlspecialchars($ev['empleado']) ?></td>
-                        <td class="text-sm"><?= $ev['totalVentas'] ?></td>
+                        <td class="text-sm"><?= $ev['ventas'] ?></td>
                         <td class="text-sm font-bold text-gray-900">$<?= number_format($ev['ingresos'], 2) ?></td>
                     </tr>
                     <?php endforeach; ?>
@@ -236,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Ingresos ($)',
                 data: ventasMes.map(v => v.ingresos),
-                backgroundColor: 'rgba(237, 116, 37, 0.15)',
-                borderColor: '#ed7425',
+                backgroundColor: 'rgba(229, 30, 37, 0.15)',
+                borderColor: '#e51e25',
                 borderWidth: 2,
                 borderRadius: 8,
             }, {
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Gráfica: Top Productos ──
     const topProd = <?= json_encode($topProductos) ?>;
-    const colores = ['#ed7425', '#6366f1', '#10b981', '#f59e0b', '#ef4444'];
+    const colores = ['#e51e25', '#6366f1', '#10b981', '#f59e0b', '#f97316'];
     new Chart(document.getElementById('chartTopProductos'), {
         type: 'doughnut',
         data: {

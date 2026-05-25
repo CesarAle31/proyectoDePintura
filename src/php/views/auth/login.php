@@ -21,10 +21,10 @@
                 extend: {
                     colors: {
                         brand: {
-                            400: '#f1914a',
-                            500: '#ed7425',
-                            600: '#de5a1b',
-                            700: '#b84318',
+                            400: '#fb7185',
+                            500: '#e51e25',
+                            600: '#be1219',
+                            700: '#9f1239',
                         },
                         slate_dark: {
                             800: '#1a1f2e',
@@ -47,13 +47,10 @@
 
         <!-- Logo y marca -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-xl shadow-brand-500/30 mb-4">
-                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                </svg>
+            <div class="inline-flex items-center justify-center w-28 h-28 rounded-2xl bg-white shadow-xl shadow-brand-500/30 mb-4 p-2">
+                <img src="src/assets/img/Captura de pantalla 2026-05-24 232344 (1).png" alt="IPESA Pinturas" class="w-full h-full object-contain rounded-xl">
             </div>
-            <h1 class="font-display text-3xl font-bold text-white tracking-tight">Ipesa Pinturas</h1>
+            <h1 class="font-display text-3xl font-bold text-white tracking-tight">IPESA Pinturas</h1>
             <p class="text-sm text-gray-400 mt-1 uppercase tracking-[0.25em]">Punto de Venta</p>
         </div>
 
@@ -112,7 +109,7 @@
         </div>
 
         <p class="text-center text-xs text-gray-500 mt-6">
-            &copy; <?= date('Y') ?> Ipesa Pinturas — Sistema de Punto de Venta
+            &copy; <?= date('Y') ?> IPESA Pinturas — Sistema de Punto de Venta
         </p>
     </div>
 

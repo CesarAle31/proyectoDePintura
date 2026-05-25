@@ -109,14 +109,12 @@ class Empleado extends Model
     public function getConVentas(): array
     {
         return $this->query("
-            SELECT e.idEmpleado,
-                   CONCAT(e.nombre, ' ', e.apellidoP) AS nombreEmpleado,
-                   COUNT(v.folio) AS totalVentas,
-                   COALESCE(SUM(v.montoTotal), 0) AS montoTotal
-            FROM empleado e
-            LEFT JOIN venta v ON e.idEmpleado = v.idEmpleado
-            GROUP BY e.idEmpleado, e.nombre, e.apellidoP
-            ORDER BY montoTotal DESC
+            SELECT CONCAT(e.nombre, ' ', e.apellidoP, ' ', e.apellidoM) AS empleado,
+                   COUNT(v.folio) AS ventas,
+                   COALESCE(SUM(v.montoTotal), 0) AS ingresos
+            FROM venta v
+            INNER JOIN empleado e ON v.idEmpleado = e.idEmpleado
+            GROUP BY e.idEmpleado, e.nombre, e.apellidoP, e.apellidoM
         ");
     }
 }

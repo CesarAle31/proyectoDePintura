@@ -103,16 +103,14 @@ class Producto extends Model
     /**
      * Obtiene productos con stock bajo (< 15 unidades).
      */
-    public function getStockBajo(int $limite = 15): array
+    public function getStockBajo(): array
     {
         return $this->query("
-            SELECT p.idPintura, p.nombre, p.color, p.stock, p.presentacion,
-                   pr.razonSocial AS proveedor
-            FROM pintura p
-            INNER JOIN proveedor pr ON p.idProveedor = pr.idProveedor
-            WHERE p.stock < :limite
-            ORDER BY p.stock ASC
-        ", ['limite' => $limite]);
+            SELECT nombre, color, stock, costo
+            FROM pintura
+            WHERE stock <= 5
+            ORDER BY stock ASC
+        ");
     }
 
     /**

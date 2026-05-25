@@ -30,12 +30,10 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1.5">Empleado</label>
-                    <select id="posEmpleado" class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" required>
-                        <option value="">Seleccionar...</option>
-                        <?php foreach ($empleados as $e): ?>
-                        <option value="<?= $e['idEmpleado'] ?>"><?= htmlspecialchars($e['nombreCompleto']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input type="text"
+                           value="<?= htmlspecialchars($empleadoActual['nombreCompleto'] ?? '') ?>"
+                           class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"
+                           readonly>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1.5">Cliente</label>
@@ -314,11 +312,10 @@ function limpiarCarrito() {
 }
 
 function procesarVenta() {
-    const empleado = document.getElementById('posEmpleado').value;
     const cliente = document.getElementById('posCliente').value;
 
-    if (!empleado || !cliente) {
-        showToast('Selecciona empleado y cliente', 'warning');
+    if (!cliente) {
+        showToast('Selecciona cliente', 'warning');
         return;
     }
     if (carrito.length === 0) {
@@ -339,14 +336,13 @@ function procesarVenta() {
         cancelButtonText: 'Revisar',
         customClass: { popup: 'rounded-2xl' }
     }).then(r => {
-        if (r.isConfirmed) enviarVenta(empleado, cliente, total);
+        if (r.isConfirmed) enviarVenta(cliente, total);
     });
 }
 
-async function enviarVenta(empleado, cliente, total) {
+async function enviarVenta(cliente, total) {
     const payload = {
         folio: FOLIO,
-        idEmpleado: parseInt(empleado),
         idCliente: parseInt(cliente),
         montoTotal: total,
         detalles: carrito.map(i => ({
@@ -370,7 +366,7 @@ async function enviarVenta(empleado, cliente, total) {
                 icon: 'success',
                 title: '¡Venta registrada!',
                 html: `<p>Folio: <strong>#${data.folio}</strong></p>`,
-                confirmButtonColor: '#ed7425',
+                confirmButtonColor: '#e51e25',
                 confirmButtonText: 'Ver Ticket',
                 showCancelButton: true,
                 cancelButtonText: 'Ir a Ventas',

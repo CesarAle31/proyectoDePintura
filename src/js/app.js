@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  app.js — JavaScript principal ColorMax POS
+ *  app.js — JavaScript principal IPESA Pinturas POS
  * ============================================================
  *  Controla: sidebar, alertas SweetAlert2, notificaciones
  *  de éxito/error vía URL params, búsqueda global.
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: 'error',
             title: 'Error',
             text: decodeURIComponent(error),
-            confirmButtonColor: '#ed7425',
+            confirmButtonColor: '#e51e25',
             customClass: { popup: 'rounded-xl' }
         });
         const url = new URL(window.location);

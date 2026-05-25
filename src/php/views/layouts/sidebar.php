@@ -37,15 +37,13 @@ $iniciales = $iniciales ?: 'U';
 <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-slate_dark-900 text-white z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
 
     <!-- Logo -->
-    <div class="p-6 border-b border-white/10">
+    <div class="p-5 border-b border-white/10">
         <a href="index.php" class="flex items-center gap-3 group">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                </svg>
+            <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:shadow-brand-500/40 transition-shadow overflow-hidden shrink-0">
+                <img src="src/assets/img/Captura de pantalla 2026-05-24 232344 (1).png" alt="IPESA Pinturas" class="w-full h-full object-contain">
             </div>
             <div>
-                <h1 class="font-display text-lg font-bold tracking-tight">Ipesa Pinturas</h1>
+                <h1 class="font-display text-base font-bold tracking-tight">IPESA Pinturas</h1>
                 <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-medium">Punto de Venta</p>
             </div>
         </a>

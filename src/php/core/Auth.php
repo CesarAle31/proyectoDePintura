@@ -66,6 +66,7 @@ class Auth
         if (!self::estaLogueado()) return null;
         return [
             'idUsuario'      => $_SESSION['idUsuario'],
+            'idEmpleado'     => $_SESSION['idEmpleado']     ?? null,
             'usuario'        => $_SESSION['usuario']        ?? '',
             'nombreCompleto' => $_SESSION['nombreCompleto'] ?? '',
             'rol'            => $_SESSION['rol']            ?? '',
@@ -90,6 +91,7 @@ class Auth
     {
         session_regenerate_id(true);
         $_SESSION['idUsuario']      = (int) $usuario['idUsuario'];
+        $_SESSION['idEmpleado']     = (int) $usuario['idEmpleado'];
         $_SESSION['usuario']        = $usuario['usuario'];
         $_SESSION['nombreCompleto'] = trim(
             $usuario['empNombre'] . ' ' .
