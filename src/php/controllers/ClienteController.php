@@ -83,6 +83,10 @@ class ClienteController extends Controller
     public function eliminar(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            $this->redirect('index.php?page=clientes&error=' . urlencode('ID de cliente inválido.'));
+            return;
+        }
         try {
             $this->modelo->delete($id);
             $this->redirect('index.php?page=clientes&msg=eliminado');

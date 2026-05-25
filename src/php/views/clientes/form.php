@@ -30,7 +30,8 @@ $actionUrl = "index.php?page=clientes&action=" . ($esEdicion ? 'actualizar' : 'g
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Nombre</label>
                 <input type="text" name="nombre" value="<?= htmlspecialchars($cliente['nombre'] ?? '') ?>"
-                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" required>
+                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm"
+                       pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü ]+" required>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Apellido Paterno</label>
@@ -55,9 +56,9 @@ $actionUrl = "index.php?page=clientes&action=" . ($esEdicion ? 'actualizar' : 'g
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Teléfono</label>
-                <input type="tel" name="telefono" value="<?= htmlspecialchars($cliente['telefono'] ?? '') ?>"
+                <input type="text" name="telefono" value="<?= htmlspecialchars($cliente['telefono'] ?? '') ?>"
                        class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm"
-                       placeholder="951 123 4567">
+                       placeholder="9511234567" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Teléfono Adicional</label>
@@ -73,16 +74,16 @@ $actionUrl = "index.php?page=clientes&action=" . ($esEdicion ? 'actualizar' : 'g
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Calle</label>
                 <input type="text" name="calle" value="<?= htmlspecialchars($cliente['calle'] ?? '') ?>"
-                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" <?= $esEdicion ? '' : 'required' ?>>
+                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" required>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Número</label>
                 <input type="text" name="numero" value="<?= htmlspecialchars($cliente['numero'] ?? '') ?>"
-                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" <?= $esEdicion ? '' : 'required' ?>>
+                       class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" required>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Colonia</label>
-                <select name="idColonia" class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" <?= $esEdicion ? '' : 'required' ?>>
+                <select name="idColonia" class="form-input w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm" required>
                     <option value="">Seleccionar colonia...</option>
                     <?php foreach ($colonias as $col): ?>
                     <option value="<?= $col['idColonia'] ?>"

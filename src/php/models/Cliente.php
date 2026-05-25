@@ -10,6 +10,40 @@
 
 class Cliente extends Model
 {
+    private function validarDatos(array $datos): array
+    {
+        $datos['nombre'] = trim($datos['nombre'] ?? '');
+        $datos['apellidoP'] = trim($datos['apellidoP'] ?? '');
+        $datos['apellidoM'] = trim($datos['apellidoM'] ?? '');
+        $datos['correo'] = trim($datos['correo'] ?? '');
+        $datos['telefono'] = trim($datos['telefono'] ?? '');
+        $datos['calle'] = trim($datos['calle'] ?? '');
+        $datos['numero'] = trim($datos['numero'] ?? '');
+        $datos['idColonia'] = trim((string) ($datos['idColonia'] ?? ''));
+
+        if ($datos['nombre'] === '') {
+            throw new \Exception('El nombre es obligatorio.');
+        }
+
+        if (!preg_match('/^[\p{L} ]+$/u', $datos['nombre'])) {
+            throw new \Exception('El nombre solo puede contener letras y espacios.');
+        }
+
+        if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+            throw new \Exception('El correo no tiene un formato válido.');
+        }
+
+        if (!preg_match('/^[0-9]{10}$/', $datos['telefono'])) {
+            throw new \Exception('El teléfono debe tener exactamente 10 dígitos.');
+        }
+
+        if ($datos['calle'] === '' || $datos['numero'] === '' || $datos['idColonia'] === '') {
+            throw new \Exception('La dirección es obligatoria.');
+        }
+
+        return $datos;
+    }
+
     public function getAll(): array
     {
         return $this->query("
@@ -25,6 +59,7 @@ class Cliente extends Model
             LEFT JOIN colonia co ON d.idColonia = co.idColonia
             LEFT JOIN municipio m ON co.claveM = m.claveM
             LEFT JOIN telefonocliente tc ON cl.idCliente = tc.idCliente
+            WHERE cl.activo = 1
             ORDER BY cl.idCliente ASC
         ");
     }
@@ -41,12 +76,14 @@ class Cliente extends Model
             LEFT JOIN colonia co ON d.idColonia = co.idColonia
             LEFT JOIN municipio m ON co.claveM = m.claveM
             LEFT JOIN telefonocliente tc ON cl.idCliente = tc.idCliente
-            WHERE cl.idCliente = :id
+            WHERE cl.idCliente = :id AND cl.activo = 1
         ", ['id' => $id]);
     }
 
     public function create(array $datos): string
     {
+        $datos = $this->validarDatos($datos);
+
         // 1. Insertar dirección
         $this->execute("
             INSERT INTO direccion (idColonia, calle, numero)
@@ -85,17 +122,50 @@ class Cliente extends Model
 
     public function update(int $id, array $datos): int
     {
+        $datos = $this->validarDatos($datos);
+
+        $cliente = $this->queryOne(
+            "SELECT idDireccion FROM cliente WHERE idCliente = :id AND activo = 1",
+            ['id' => $id]
+        );
+        if (!$cliente) {
+            throw new \Exception('El cliente no existe o ya fue dado de baja.');
+        }
+
+        if (!empty($cliente['idDireccion'])) {
+            $this->execute("
+                UPDATE direccion SET idColonia = :colonia, calle = :calle, numero = :numero
+                WHERE idDireccion = :idDireccion
+            ", [
+                'idDireccion' => $cliente['idDireccion'],
+                'colonia'     => $datos['idColonia'],
+                'calle'       => $datos['calle'],
+                'numero'      => $datos['numero'],
+            ]);
+        } else {
+            $this->execute("
+                INSERT INTO direccion (idColonia, calle, numero)
+                VALUES (:colonia, :calle, :numero)
+            ", [
+                'colonia' => $datos['idColonia'],
+                'calle'   => $datos['calle'],
+                'numero'  => $datos['numero'],
+            ]);
+            $cliente['idDireccion'] = $this->lastInsertId();
+        }
+
         // Actualizar cliente
         $this->execute("
             UPDATE cliente SET nombre = :nombre, apellidoP = :ap, apellidoM = :am,
-                   telefono = :tel, correo = :correo
-            WHERE idCliente = :id
+                   telefono = :tel, idDireccion = :dir, correo = :correo
+            WHERE idCliente = :id AND activo = 1
         ", [
             'id'     => $id,
             'nombre' => $datos['nombre'],
             'ap'     => $datos['apellidoP'],
             'am'     => $datos['apellidoM'],
             'tel'    => $datos['telefono'] ?? null,
+            'dir'    => $cliente['idDireccion'],
             'correo' => $datos['correo'],
         ]);
 
@@ -116,13 +186,22 @@ class Cliente extends Model
 
     public function delete(int $id): int
     {
-        $this->execute("DELETE FROM telefonocliente WHERE idCliente = :id", ['id' => $id]);
-        return $this->execute("DELETE FROM cliente WHERE idCliente = :id", ['id' => $id]);
+        $cliente = $this->queryOne(
+            "SELECT idCliente FROM cliente WHERE idCliente = :id AND activo = 1",
+            ['id' => $id]
+        );
+        if (!$cliente) {
+            throw new \Exception('El cliente no existe o ya fue dado de baja.');
+        }
+        return $this->execute(
+            "UPDATE cliente SET activo = 0 WHERE idCliente = :id",
+            ['id' => $id]
+        );
     }
 
     public function count(): int
     {
-        $r = $this->queryOne("SELECT COUNT(*) AS total FROM cliente");
+        $r = $this->queryOne("SELECT COUNT(*) AS total FROM cliente WHERE activo = 1");
         return (int) ($r['total'] ?? 0);
     }
 
@@ -130,7 +209,7 @@ class Cliente extends Model
     {
         return $this->query("
             SELECT idCliente, CONCAT(nombre, ' ', apellidoP, ' ', apellidoM) AS nombreCompleto
-            FROM cliente ORDER BY nombre
+            FROM cliente WHERE activo = 1 ORDER BY nombre
         ");
     }
 
