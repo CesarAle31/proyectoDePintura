@@ -104,7 +104,7 @@
 
             <!-- Footer -->
             <footer class="p-4 text-center text-xs text-gray-400 border-t border-gray-100">
-                ColorMax POS &copy; <?= date('Y') ?> — Sistema de Punto de Venta para Pinturas
+                Ipesa pinturas &copy; <?= date('Y') ?> — Sistema de Punto de Venta para Pinturas
             </footer>
         </div>
     </div>

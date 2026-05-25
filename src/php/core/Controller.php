@@ -33,6 +33,16 @@ class Controller
     }
 
     /**
+     * Renderiza una vista SIN el layout principal (login, etc.).
+     * La vista es responsable de su propio <html>...</html>.
+     */
+    protected function viewSinLayout(string $vista, array $datos = []): void
+    {
+        extract($datos);
+        require __DIR__ . '/../views/' . $vista . '.php';
+    }
+
+    /**
      * Responde con JSON (para peticiones AJAX).
      */
     protected function json(array $datos, int $codigo = 200): void
