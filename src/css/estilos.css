@@ -1,0 +1,251 @@
+/**
+ * ============================================================
+ *  estilos.css — Estilos personalizados ColorMax POS
+ * ============================================================
+ *  Complementa Tailwind con animaciones, scrollbar custom,
+ *  transiciones y utilidades que Tailwind no cubre por defecto.
+ * ============================================================
+ */
+
+/* ─── Animaciones de entrada ─── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+}
+
+.animate-fadeInUp   { animation: fadeInUp 0.5s ease-out both; }
+.animate-fadeIn     { animation: fadeIn 0.4s ease-out both; }
+.animate-slideIn    { animation: slideInRight 0.4s ease-out both; }
+.animate-scaleIn    { animation: scaleIn 0.3s ease-out both; }
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* Retraso escalonado para tarjetas */
+.stat-card:nth-child(1) { animation: fadeInUp 0.5s ease-out 0.0s both; }
+.stat-card:nth-child(2) { animation: fadeInUp 0.5s ease-out 0.1s both; }
+.stat-card:nth-child(3) { animation: fadeInUp 0.5s ease-out 0.2s both; }
+.stat-card:nth-child(4) { animation: fadeInUp 0.5s ease-out 0.3s both; }
+
+/* Filas de tabla escalonadas */
+.table-row { animation: fadeIn 0.3s ease-out both; }
+.table-row:nth-child(odd)  { animation-delay: 0.02s; }
+.table-row:nth-child(even) { animation-delay: 0.04s; }
+
+/* ─── Scrollbar personalizado ─── */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ─── Transiciones suaves para sidebar ─── */
+.sidebar-link {
+    position: relative;
+    transition: all 0.2s ease;
+}
+.sidebar-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px;
+    height: 60%;
+    border-radius: 0 4px 4px 0;
+    background: #ed7425;
+    transition: transform 0.2s ease;
+}
+.sidebar-link:hover::before,
+.sidebar-link.active::before {
+    transform: translateY(-50%) scaleY(1);
+}
+
+/* ─── Tablas modernas ─── */
+.table-modern {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.table-modern thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f8fafc;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+.table-modern tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+    color: #334155;
+    vertical-align: middle;
+}
+.table-modern tbody tr {
+    transition: background-color 0.15s ease;
+}
+.table-modern tbody tr:hover {
+    background-color: #fef7ee;
+}
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ─── Botones con ripple ─── */
+.btn-primary {
+    background: linear-gradient(135deg, #ed7425, #d4631d);
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(237, 116, 37, 0.25);
+}
+.btn-primary:hover {
+    box-shadow: 0 4px 16px rgba(237, 116, 37, 0.35);
+    transform: translateY(-1px);
+}
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: white;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+.btn-danger:hover {
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    transform: translateY(-1px);
+}
+
+/* ─── Formularios ─── */
+.form-input {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-input:focus {
+    border-color: #ed7425;
+    box-shadow: 0 0 0 3px rgba(237, 116, 37, 0.1);
+    outline: none;
+}
+
+/* ─── Badge / Chip ─── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger  { background: #fee2e2; color: #991b1b; }
+.badge-info    { background: #dbeafe; color: #1e40af; }
+.badge-brand   { background: #fef7ee; color: #c2410c; }
+
+/* ─── Tooltip simple ─── */
+[data-tooltip] {
+    position: relative;
+}
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: #1e293b;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* ─── Overlay del sidebar móvil ─── */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ─── Impresión de ticket ─── */
+@media print {
+    body * { visibility: hidden; }
+    .ticket-print, .ticket-print * { visibility: visible; }
+    .ticket-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+    }
+    .no-print { display: none !important; }
+}
+
+/* ─── Empty state ─── */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #94a3b8;
+}
+.empty-state svg {
+    margin: 0 auto 1rem;
+    opacity: 0.4;
+}
