@@ -22,14 +22,14 @@
     </div>
     <div class="flex items-center gap-3">
         <button onclick="window.print()"
-                class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold">
+                class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold no-print">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
             </svg>
             Imprimir
         </button>
         <a href="index.php?page=ventas"
-           class="btn-secondary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold">
+           class="btn-secondary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold no-print">
             Volver a Ventas
         </a>
     </div>
@@ -37,7 +37,7 @@
 
 <!-- ════════ TICKET IMPRIMIBLE ════════ -->
 <div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ticket-container">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ticket-container ticket-print">
 
         <!-- Encabezado del ticket -->
         <div class="bg-gradient-to-r from-brand-500 to-brand-600 text-white px-8 py-6 text-center">
@@ -129,25 +129,3 @@
         </div>
     </div>
 </div>
-
-<!-- Estilos específicos para impresión del ticket -->
-<style>
-@media print {
-    /* Ocultar todo excepto el ticket */
-    .no-print, nav, aside, header, .sidebar { display: none !important; }
-    body { background: white !important; margin: 0; padding: 0; }
-    main, .main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-
-    .ticket-container {
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        max-width: 80mm;
-        margin: 0 auto;
-        font-size: 12px;
-    }
-
-    .ticket-container table { font-size: 11px; }
-    .ticket-container h1 { font-size: 18px !important; }
-}
-</style>

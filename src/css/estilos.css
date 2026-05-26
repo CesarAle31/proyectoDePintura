@@ -226,17 +226,46 @@
 
 /* ─── Impresión de ticket ─── */
 @media print {
-    body * { visibility: hidden; }
-    .ticket-print, .ticket-print * { visibility: visible; }
-    .ticket-print {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 80mm;
-        font-family: 'Courier New', monospace;
-        font-size: 12px;
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
-    .no-print { display: none !important; }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .ticket-print,
+    .ticket-print * {
+        visibility: visible !important;
+    }
+
+    .ticket-print {
+        position: absolute !important;
+        left: 50% !important;
+        top: 0 !important;
+        transform: translateX(-50%) !important;
+        width: 90mm !important;
+        max-width: 90mm !important;
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
 
 /* ─── Empty state ─── */
