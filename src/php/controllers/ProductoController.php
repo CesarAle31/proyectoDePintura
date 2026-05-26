@@ -16,13 +16,26 @@ class ProductoController extends Controller
         $this->proveedorModelo = new Proveedor();
     }
 
-    /** Listar todos los productos */
+    /** Listar productos con filtros avanzados */
     public function index(): void
     {
+        $filtros = [
+            'buscar'      => trim($_GET['buscar']      ?? ''),
+            'proveedor'   => (int) ($_GET['proveedor']   ?? 0),
+            'presentacion' => trim($_GET['presentacion'] ?? ''),
+            'stock_bajo'  => !empty($_GET['stock_bajo']),
+        ];
+
+        $hayFiltros = $filtros['buscar'] !== '' || $filtros['proveedor'] > 0
+                   || $filtros['presentacion'] !== '' || $filtros['stock_bajo'];
+
         $this->view('productos/index', [
-            'titulo'       => 'Productos / Pinturas',
-            'paginaActual' => 'productos',
-            'productos'    => $this->modelo->getAll(),
+            'titulo'         => 'Productos / Pinturas',
+            'paginaActual'   => 'productos',
+            'productos'      => $hayFiltros ? $this->modelo->filtrar($filtros) : $this->modelo->getAll(),
+            'filtros'        => $filtros,
+            'proveedores'    => $this->proveedorModelo->getForSelect(),
+            'presentaciones' => $this->modelo->getPresentaciones(),
         ]);
     }
 

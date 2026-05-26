@@ -149,6 +149,56 @@ class Producto extends Model
     }
 
     /**
+     * Listado filtrable con SQL dinámico y parámetros seguros.
+     * Soporta: buscar (nombre/color), proveedor, presentación y stock bajo.
+     */
+    public function filtrar(array $f): array
+    {
+        $sql = "
+            SELECT p.idPintura, p.nombre, p.color, p.capacidad, p.stock,
+                   p.costo, p.presentacion,
+                   c.tipo AS tipoClasificacion, c.linea, c.descripcion AS descClasificacion,
+                   pr.razonSocial AS proveedor
+            FROM pintura p
+            INNER JOIN clasificacion c  ON p.claveClasificacion = c.claveClasificacion
+            INNER JOIN proveedor    pr  ON p.idProveedor         = pr.idProveedor
+            WHERE 1=1";
+        $params = [];
+
+        if (!empty($f['buscar'])) {
+            $like = '%' . $f['buscar'] . '%';
+            $sql .= " AND (p.nombre LIKE :b1 OR p.color LIKE :b2)";
+            $params['b1'] = $like;
+            $params['b2'] = $like;
+        }
+
+        if (!empty($f['proveedor'])) {
+            $sql .= " AND p.idProveedor = :proveedor";
+            $params['proveedor'] = (int) $f['proveedor'];
+        }
+
+        if (!empty($f['presentacion'])) {
+            $sql .= " AND p.presentacion = :presentacion";
+            $params['presentacion'] = $f['presentacion'];
+        }
+
+        if (!empty($f['stock_bajo'])) {
+            $sql .= " AND p.stock <= 5";
+        }
+
+        $sql .= " ORDER BY p.idPintura ASC";
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Valores distintos de presentación para el select de filtros.
+     */
+    public function getPresentaciones(): array
+    {
+        return $this->query("SELECT DISTINCT presentacion FROM pintura WHERE presentacion IS NOT NULL AND presentacion <> '' ORDER BY presentacion");
+    }
+
+    /**
      * Búsqueda por nombre o color.
      */
     public function buscar(string $termino): array

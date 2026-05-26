@@ -64,6 +64,54 @@ class Cliente extends Model
         ");
     }
 
+    /**
+     * Listado filtrable con SQL dinámico y parámetros seguros.
+     * Soporta: buscar (nombre/correo), teléfono, estado activo/inactivo.
+     */
+    public function filtrar(array $f): array
+    {
+        $sql = "
+            SELECT cl.idCliente, cl.nombre, cl.apellidoP, cl.apellidoM,
+                   cl.correo, cl.telefono, cl.activo,
+                   CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) AS nombreCompleto,
+                   d.calle, d.numero,
+                   co.colonia, co.cp,
+                   m.nombre AS municipio, m.estado,
+                   tc.telefonoCliente
+            FROM cliente cl
+            LEFT JOIN direccion      d  ON cl.idDireccion = d.idDireccion
+            LEFT JOIN colonia        co ON d.idColonia    = co.idColonia
+            LEFT JOIN municipio      m  ON co.claveM      = m.claveM
+            LEFT JOIN telefonocliente tc ON cl.idCliente  = tc.idCliente
+            WHERE 1=1";
+        $params = [];
+
+        if (isset($f['activo']) && $f['activo'] !== '') {
+            $sql .= " AND cl.activo = :activo";
+            $params['activo'] = (int) $f['activo'];
+        } else {
+            $sql .= " AND cl.activo = 1";
+        }
+
+        if (!empty($f['buscar'])) {
+            $like = '%' . $f['buscar'] . '%';
+            $sql .= " AND (CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) LIKE :b1
+                        OR cl.correo LIKE :b2)";
+            $params['b1'] = $like;
+            $params['b2'] = $like;
+        }
+
+        if (!empty($f['telefono'])) {
+            $like = '%' . $f['telefono'] . '%';
+            $sql .= " AND (tc.telefonoCliente LIKE :tel1 OR cl.telefono LIKE :tel2)";
+            $params['tel1'] = $like;
+            $params['tel2'] = $like;
+        }
+
+        $sql .= " ORDER BY cl.idCliente ASC";
+        return $this->query($sql, $params);
+    }
+
     public function getById(int $id): ?array
     {
         return $this->queryOne("

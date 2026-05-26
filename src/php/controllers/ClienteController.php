@@ -16,10 +16,20 @@ class ClienteController extends Controller
 
     public function index(): void
     {
+        $filtros = [
+            'buscar'   => trim($_GET['buscar']   ?? ''),
+            'telefono' => trim($_GET['telefono'] ?? ''),
+            'activo'   => $_GET['activo'] ?? '',
+        ];
+
+        $hayFiltros = $filtros['buscar'] !== '' || $filtros['telefono'] !== ''
+                   || $filtros['activo'] !== '';
+
         $this->view('clientes/index', [
             'titulo'       => 'Clientes',
             'paginaActual' => 'clientes',
-            'clientes'     => $this->modelo->getAll(),
+            'clientes'     => $hayFiltros ? $this->modelo->filtrar($filtros) : $this->modelo->getAll(),
+            'filtros'      => $filtros,
         ]);
     }
 

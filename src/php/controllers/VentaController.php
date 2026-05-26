@@ -16,13 +16,31 @@ class VentaController extends Controller
         $this->ticketModelo = new Ticket();
     }
 
-    /** Listar ventas */
+    /** Listar ventas con filtros avanzados */
     public function index(): void
     {
+        $filtros = [
+            'buscar'   => trim($_GET['buscar']   ?? ''),
+            'desde'    => trim($_GET['desde']    ?? ''),
+            'hasta'    => trim($_GET['hasta']    ?? ''),
+            'cliente'  => (int) ($_GET['cliente']  ?? 0),
+            'empleado' => (int) ($_GET['empleado'] ?? 0),
+        ];
+
+        $hayFiltros = $filtros['buscar'] !== '' || $filtros['desde'] !== ''
+                   || $filtros['hasta'] !== ''  || $filtros['cliente'] > 0
+                   || $filtros['empleado'] > 0;
+
+        $clienteModelo  = new Cliente();
+        $empleadoModelo = new Empleado();
+
         $this->view('ventas/index', [
             'titulo'       => 'Ventas',
             'paginaActual' => 'ventas',
-            'ventas'       => $this->modelo->getAll(),
+            'ventas'       => $hayFiltros ? $this->modelo->filtrar($filtros) : $this->modelo->getAll(),
+            'filtros'      => $filtros,
+            'clientes'     => $clienteModelo->getForSelect(),
+            'empleados'    => $empleadoModelo->getForSelect(),
         ]);
     }
 

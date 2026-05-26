@@ -159,6 +159,56 @@ class Venta extends Model
     }
 
     /**
+     * Listado filtrable con SQL dinámico y parámetros seguros.
+     * Soporta: buscar (folio/cliente/empleado), rango de fechas, cliente y empleado.
+     */
+    public function filtrar(array $f): array
+    {
+        $sql = "
+            SELECT v.folio, v.fecha, v.montoTotal,
+                   CONCAT(e.nombre, ' ', e.apellidoP) AS empleado,
+                   CONCAT(c.nombre, ' ', c.apellidoP) AS cliente
+            FROM venta v
+            INNER JOIN empleado e ON v.idEmpleado = e.idEmpleado
+            INNER JOIN cliente  c ON v.idCliente  = c.idCliente
+            WHERE 1=1";
+        $params = [];
+
+        if (!empty($f['buscar'])) {
+            $like = '%' . $f['buscar'] . '%';
+            $sql .= " AND (v.folio LIKE :b1
+                        OR CONCAT(c.nombre, ' ', c.apellidoP) LIKE :b2
+                        OR CONCAT(e.nombre, ' ', e.apellidoP) LIKE :b3)";
+            $params['b1'] = $like;
+            $params['b2'] = $like;
+            $params['b3'] = $like;
+        }
+
+        if (!empty($f['desde'])) {
+            $sql .= " AND v.fecha >= :desde";
+            $params['desde'] = $f['desde'];
+        }
+
+        if (!empty($f['hasta'])) {
+            $sql .= " AND v.fecha <= :hasta";
+            $params['hasta'] = $f['hasta'];
+        }
+
+        if (!empty($f['cliente'])) {
+            $sql .= " AND v.idCliente = :cliente";
+            $params['cliente'] = (int) $f['cliente'];
+        }
+
+        if (!empty($f['empleado'])) {
+            $sql .= " AND v.idEmpleado = :empleado";
+            $params['empleado'] = (int) $f['empleado'];
+        }
+
+        $sql .= " ORDER BY v.folio DESC";
+        return $this->query($sql, $params);
+    }
+
+    /**
      * Ventas por rango de fechas.
      */
     public function ventasPorRango(string $desde, string $hasta): array

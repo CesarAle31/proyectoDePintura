@@ -104,6 +104,53 @@ class Empleado extends Model
     }
 
     /**
+     * Listado filtrable con SQL dinámico y parámetros seguros.
+     * Soporta: buscar (nombre), rol (vía tabla usuario/rol), activo (vía usuario).
+     */
+    public function filtrar(array $f): array
+    {
+        $sql = "
+            SELECT e.idEmpleado, e.nombre, e.apellidoP, e.apellidoM,
+                   CONCAT(e.nombre, ' ', e.apellidoP, ' ', e.apellidoM) AS nombreCompleto,
+                   te.telefonoEmpleado,
+                   r.nombre AS rol,
+                   u.activo AS usuarioActivo
+            FROM empleado e
+            LEFT JOIN telefonoempleado te ON e.idEmpleado = te.idEmpleado
+            LEFT JOIN usuario           u  ON e.idEmpleado = u.idEmpleado
+            LEFT JOIN rol               r  ON u.idRol      = r.idRol
+            WHERE 1=1";
+        $params = [];
+
+        if (!empty($f['buscar'])) {
+            $like = '%' . $f['buscar'] . '%';
+            $sql .= " AND CONCAT(e.nombre, ' ', e.apellidoP, ' ', e.apellidoM) LIKE :b1";
+            $params['b1'] = $like;
+        }
+
+        if (!empty($f['rol'])) {
+            $sql .= " AND u.idRol = :rol";
+            $params['rol'] = (int) $f['rol'];
+        }
+
+        if (isset($f['activo']) && $f['activo'] !== '') {
+            $sql .= " AND u.activo = :activo";
+            $params['activo'] = (int) $f['activo'];
+        }
+
+        $sql .= " ORDER BY e.idEmpleado ASC";
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Roles disponibles para el select de filtros.
+     */
+    public function getRoles(): array
+    {
+        return $this->query("SELECT idRol, nombre FROM rol ORDER BY idRol");
+    }
+
+    /**
      * Empleados con total de ventas realizadas (JOIN + GROUP).
      */
     public function getConVentas(): array

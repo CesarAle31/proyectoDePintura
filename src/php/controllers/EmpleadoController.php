@@ -7,10 +7,21 @@ class EmpleadoController extends Controller
 
     public function index(): void
     {
+        $filtros = [
+            'buscar' => trim($_GET['buscar'] ?? ''),
+            'rol'    => (int) ($_GET['rol']    ?? 0),
+            'activo' => $_GET['activo'] ?? '',
+        ];
+
+        $hayFiltros = $filtros['buscar'] !== '' || $filtros['rol'] > 0
+                   || $filtros['activo'] !== '';
+
         $this->view('empleados/index', [
             'titulo'       => 'Empleados',
             'paginaActual' => 'empleados',
-            'empleados'    => $this->modelo->getAll(),
+            'empleados'    => $hayFiltros ? $this->modelo->filtrar($filtros) : $this->modelo->getAll(),
+            'filtros'      => $filtros,
+            'roles'        => $this->modelo->getRoles(),
         ]);
     }
 
