@@ -20,12 +20,12 @@ class Database
     public static function getConexion(): PDO
     {
         if (self::$conexion === null) {
-            $host    = $_ENV['DB_HOST']    ?? 'localhost';
-            $port    = $_ENV['DB_PORT']    ?? '3306';
-            $dbname  = $_ENV['DB_NAME']    ?? 'pinturadb';
-            $user    = $_ENV['DB_USER']    ?? '';
-            $pass    = $_ENV['DB_PASS']    ?? '';
-            $charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
+            $host    = self::env('DB_HOST', 'localhost');
+            $port    = self::env('DB_PORT', '3306');
+            $dbname  = self::env('DB_NAME', 'pinturadb');
+            $user    = self::env('DB_USER', 'root');
+            $pass    = self::env('DB_PASS', '');
+            $charset = self::env('DB_CHARSET', 'utf8mb4');
 
             $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
 
@@ -44,6 +44,12 @@ class Database
         }
 
         return self::$conexion;
+    }
+
+    private static function env(string $clave, string $default): string
+    {
+        $valor = $_ENV[$clave] ?? getenv($clave);
+        return $valor === false || $valor === null ? $default : (string) $valor;
     }
 
     /** Evita clonar la instancia */
