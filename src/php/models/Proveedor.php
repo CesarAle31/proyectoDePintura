@@ -7,39 +7,69 @@
 
 class Proveedor extends Model
 {
+    /**
+     * Mapea columnas de dirección que cambian entre versiones de pinturadb.
+     */
+    private function esquemaUbicacion(): array
+    {
+        return [
+            'dirCol'    => $this->pickColumn('direccion', ['idColonia', 'claveColonia']),
+            'colPk'     => $this->pickColumn('colonia', ['idColonia', 'claveColonia']),
+            'colNombre' => $this->pickColumn('colonia', ['colonia', 'nombreColonia']),
+            'munFk'     => $this->pickColumn('colonia', ['claveM', 'claveMunicipio']),
+            'munPk'     => $this->pickColumn('municipio', ['claveM', 'claveMunicipio']),
+            'munNombre' => $this->pickColumn('municipio', ['nombre', 'nombreMunicipio']),
+            'munEstado' => $this->hasColumn('municipio', 'estado') ? 'estado' : null,
+        ];
+    }
+
+    private function joinsUbicacion(array $e): string
+    {
+        return "
+            LEFT JOIN direccion d ON pr.idDireccion = d.idDireccion
+            LEFT JOIN colonia co ON d.{$e['dirCol']} = co.{$e['colPk']}
+            LEFT JOIN municipio m ON co.{$e['munFk']} = m.{$e['munPk']}
+        ";
+    }
+
+    private function selectUbicacion(array $e, bool $incluirIds = false): string
+    {
+        $estado = $e['munEstado'] ? "m.{$e['munEstado']} AS estado" : "'' AS estado";
+        $ids = $incluirIds ? "d.{$e['dirCol']} AS idColonia, co.{$e['munFk']} AS claveM," : '';
+
+        return "
+                   d.calle, d.numero,
+                   {$ids}
+                   co.{$e['colNombre']} AS colonia, co.cp,
+                   m.{$e['munNombre']} AS municipio, {$estado}";
+    }
+
     public function getAll(): array
     {
+        $e = $this->esquemaUbicacion();
         return $this->query("
-            SELECT pr.idProveedor, pr.razonSocial, pr.telefono,
-                   d.calle, d.numero,
-                   co.colonia, co.cp,
-                   m.nombre AS municipio, m.estado
-            FROM proveedor pr
-            LEFT JOIN direccion d ON pr.idDireccion = d.idDireccion
-            LEFT JOIN colonia co ON d.idColonia = co.idColonia
-            LEFT JOIN municipio m ON co.claveM = m.claveM
+            SELECT pr.idProveedor, pr.razonSocial, pr.telefono," .
+                   $this->selectUbicacion($e) . "
+            FROM proveedor pr" . $this->joinsUbicacion($e) . "
             ORDER BY pr.idProveedor ASC
         ");
     }
 
     public function getById(int $id): ?array
     {
+        $e = $this->esquemaUbicacion();
         return $this->queryOne("
-            SELECT pr.*, d.calle, d.numero, d.idColonia,
-                   co.colonia, co.cp, co.claveM,
-                   m.nombre AS municipio
-            FROM proveedor pr
-            LEFT JOIN direccion d ON pr.idDireccion = d.idDireccion
-            LEFT JOIN colonia co ON d.idColonia = co.idColonia
-            LEFT JOIN municipio m ON co.claveM = m.claveM
+            SELECT pr.*," . $this->selectUbicacion($e, true) . "
+            FROM proveedor pr" . $this->joinsUbicacion($e) . "
             WHERE pr.idProveedor = :id
         ", ['id' => $id]);
     }
 
     public function create(array $datos): string
     {
+        $e = $this->esquemaUbicacion();
         $this->execute("
-            INSERT INTO direccion (idColonia, calle, numero)
+            INSERT INTO direccion ({$e['dirCol']}, calle, numero)
             VALUES (:colonia, :calle, :numero)
         ", [
             'colonia' => $datos['idColonia'],

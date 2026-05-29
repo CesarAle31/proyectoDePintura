@@ -10,6 +10,49 @@
 
 class Cliente extends Model
 {
+    /**
+     * Mapea nombres de columnas que cambian entre instalaciones de pinturadb.
+     */
+    private function esquemaUbicacion(): array
+    {
+        $tel = $this->pickColumn('telefonocliente', ['telefonoCliente', 'telefono']);
+
+        return [
+            'dirCol'     => $this->pickColumn('direccion', ['idColonia', 'claveColonia']),
+            'colPk'      => $this->pickColumn('colonia', ['idColonia', 'claveColonia']),
+            'colNombre'  => $this->pickColumn('colonia', ['colonia', 'nombreColonia']),
+            'munFk'      => $this->pickColumn('colonia', ['claveM', 'claveMunicipio']),
+            'munPk'      => $this->pickColumn('municipio', ['claveM', 'claveMunicipio']),
+            'munNombre'  => $this->pickColumn('municipio', ['nombre', 'nombreMunicipio']),
+            'munEstado'  => $this->hasColumn('municipio', 'estado') ? 'estado' : null,
+            'telCliente' => $tel,
+            'telId'      => $this->pickColumn('telefonocliente', ['idTelefonoCliente', 'idTelefono', 'idTelefonoC']),
+        ];
+    }
+
+    private function joinsUbicacion(array $e): string
+    {
+        return "
+            LEFT JOIN direccion d ON cl.idDireccion = d.idDireccion
+            LEFT JOIN colonia co ON d.{$e['dirCol']} = co.{$e['colPk']}
+            LEFT JOIN municipio m ON co.{$e['munFk']} = m.{$e['munPk']}
+            LEFT JOIN telefonocliente tc ON cl.idCliente = tc.idCliente
+        ";
+    }
+
+    private function selectUbicacion(array $e, bool $incluirIds = false): string
+    {
+        $estado = $e['munEstado'] ? "m.{$e['munEstado']} AS estado" : "'' AS estado";
+        $ids = $incluirIds ? "d.{$e['dirCol']} AS idColonia, co.{$e['munFk']} AS claveM," : '';
+
+        return "
+                   d.calle, d.numero,
+                   {$ids}
+                   co.{$e['colNombre']} AS colonia, co.cp,
+                   m.{$e['munNombre']} AS municipio, {$estado},
+                   tc.{$e['telCliente']} AS telefonoCliente";
+    }
+
     private function validarDatos(array $datos): array
     {
         $datos['nombre'] = trim($datos['nombre'] ?? '');
@@ -46,19 +89,13 @@ class Cliente extends Model
 
     public function getAll(): array
     {
+        $e = $this->esquemaUbicacion();
         return $this->query("
             SELECT cl.idCliente, cl.nombre, cl.apellidoP, cl.apellidoM,
                    cl.correo, cl.telefono,
-                   CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) AS nombreCompleto,
-                   d.calle, d.numero,
-                   co.colonia, co.cp,
-                   m.nombre AS municipio, m.estado,
-                   tc.telefonoCliente
-            FROM cliente cl
-            LEFT JOIN direccion d ON cl.idDireccion = d.idDireccion
-            LEFT JOIN colonia co ON d.idColonia = co.idColonia
-            LEFT JOIN municipio m ON co.claveM = m.claveM
-            LEFT JOIN telefonocliente tc ON cl.idCliente = tc.idCliente
+                   CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) AS nombreCompleto," .
+                   $this->selectUbicacion($e) . "
+            FROM cliente cl" . $this->joinsUbicacion($e) . "
             WHERE cl.activo = 1
             ORDER BY cl.idCliente ASC
         ");
@@ -70,19 +107,13 @@ class Cliente extends Model
      */
     public function filtrar(array $f): array
     {
+        $e = $this->esquemaUbicacion();
         $sql = "
             SELECT cl.idCliente, cl.nombre, cl.apellidoP, cl.apellidoM,
                    cl.correo, cl.telefono, cl.activo,
-                   CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) AS nombreCompleto,
-                   d.calle, d.numero,
-                   co.colonia, co.cp,
-                   m.nombre AS municipio, m.estado,
-                   tc.telefonoCliente
-            FROM cliente cl
-            LEFT JOIN direccion      d  ON cl.idDireccion = d.idDireccion
-            LEFT JOIN colonia        co ON d.idColonia    = co.idColonia
-            LEFT JOIN municipio      m  ON co.claveM      = m.claveM
-            LEFT JOIN telefonocliente tc ON cl.idCliente  = tc.idCliente
+                   CONCAT(cl.nombre, ' ', cl.apellidoP, ' ', cl.apellidoM) AS nombreCompleto," .
+                   $this->selectUbicacion($e) . "
+            FROM cliente cl" . $this->joinsUbicacion($e) . "
             WHERE 1=1";
         $params = [];
 
@@ -103,7 +134,7 @@ class Cliente extends Model
 
         if (!empty($f['telefono'])) {
             $like = '%' . $f['telefono'] . '%';
-            $sql .= " AND (tc.telefonoCliente LIKE :tel1 OR cl.telefono LIKE :tel2)";
+            $sql .= " AND (tc.{$e['telCliente']} LIKE :tel1 OR cl.telefono LIKE :tel2)";
             $params['tel1'] = $like;
             $params['tel2'] = $like;
         }
@@ -114,16 +145,10 @@ class Cliente extends Model
 
     public function getById(int $id): ?array
     {
+        $e = $this->esquemaUbicacion();
         return $this->queryOne("
-            SELECT cl.*, d.calle, d.numero, d.idColonia,
-                   co.colonia, co.cp, co.claveM,
-                   m.nombre AS municipio, m.estado,
-                   tc.telefonoCliente
-            FROM cliente cl
-            LEFT JOIN direccion d ON cl.idDireccion = d.idDireccion
-            LEFT JOIN colonia co ON d.idColonia = co.idColonia
-            LEFT JOIN municipio m ON co.claveM = m.claveM
-            LEFT JOIN telefonocliente tc ON cl.idCliente = tc.idCliente
+            SELECT cl.*," . $this->selectUbicacion($e, true) . "
+            FROM cliente cl" . $this->joinsUbicacion($e) . "
             WHERE cl.idCliente = :id AND cl.activo = 1
         ", ['id' => $id]);
     }
@@ -132,9 +157,11 @@ class Cliente extends Model
     {
         $datos = $this->validarDatos($datos);
 
+        $e = $this->esquemaUbicacion();
+
         // 1. Insertar dirección
         $this->execute("
-            INSERT INTO direccion (idColonia, calle, numero)
+            INSERT INTO direccion ({$e['dirCol']}, calle, numero)
             VALUES (:colonia, :calle, :numero)
         ", [
             'colonia' => $datos['idColonia'],
@@ -160,7 +187,7 @@ class Cliente extends Model
         // 3. Insertar teléfono
         if (!empty($datos['telefonoCliente'])) {
             $this->execute("
-                INSERT INTO telefonocliente (idCliente, telefonoCliente)
+                INSERT INTO telefonocliente (idCliente, {$e['telCliente']})
                 VALUES (:id, :tel)
             ", ['id' => $idCliente, 'tel' => $datos['telefonoCliente']]);
         }
@@ -171,6 +198,7 @@ class Cliente extends Model
     public function update(int $id, array $datos): int
     {
         $datos = $this->validarDatos($datos);
+        $e = $this->esquemaUbicacion();
 
         $cliente = $this->queryOne(
             "SELECT idDireccion FROM cliente WHERE idCliente = :id AND activo = 1",
@@ -182,7 +210,7 @@ class Cliente extends Model
 
         if (!empty($cliente['idDireccion'])) {
             $this->execute("
-                UPDATE direccion SET idColonia = :colonia, calle = :calle, numero = :numero
+                UPDATE direccion SET {$e['dirCol']} = :colonia, calle = :calle, numero = :numero
                 WHERE idDireccion = :idDireccion
             ", [
                 'idDireccion' => $cliente['idDireccion'],
@@ -192,7 +220,7 @@ class Cliente extends Model
             ]);
         } else {
             $this->execute("
-                INSERT INTO direccion (idColonia, calle, numero)
+                INSERT INTO direccion ({$e['dirCol']}, calle, numero)
                 VALUES (:colonia, :calle, :numero)
             ", [
                 'colonia' => $datos['idColonia'],
@@ -219,12 +247,12 @@ class Cliente extends Model
 
         // Actualizar teléfono
         if (!empty($datos['telefonoCliente'])) {
-            $existe = $this->queryOne("SELECT idTelefonoCliente FROM telefonocliente WHERE idCliente = :id", ['id' => $id]);
+            $existe = $this->queryOne("SELECT {$e['telId']} FROM telefonocliente WHERE idCliente = :id", ['id' => $id]);
             if ($existe) {
-                $this->execute("UPDATE telefonocliente SET telefonoCliente = :tel WHERE idCliente = :id",
+                $this->execute("UPDATE telefonocliente SET {$e['telCliente']} = :tel WHERE idCliente = :id",
                     ['tel' => $datos['telefonoCliente'], 'id' => $id]);
             } else {
-                $this->execute("INSERT INTO telefonocliente (idCliente, telefonoCliente) VALUES (:id, :tel)",
+                $this->execute("INSERT INTO telefonocliente (idCliente, {$e['telCliente']}) VALUES (:id, :tel)",
                     ['id' => $id, 'tel' => $datos['telefonoCliente']]);
             }
         }
@@ -263,11 +291,15 @@ class Cliente extends Model
 
     public function getColonias(): array
     {
+        $e = $this->esquemaUbicacion();
         return $this->query("
-            SELECT co.idColonia, co.colonia, co.cp, m.nombre AS municipio
+            SELECT co.{$e['colPk']} AS idColonia,
+                   co.{$e['colNombre']} AS colonia,
+                   co.cp,
+                   m.{$e['munNombre']} AS municipio
             FROM colonia co
-            INNER JOIN municipio m ON co.claveM = m.claveM
-            ORDER BY m.nombre, co.colonia
+            INNER JOIN municipio m ON co.{$e['munFk']} = m.{$e['munPk']}
+            ORDER BY m.{$e['munNombre']}, co.{$e['colNombre']}
         ");
     }
 }
